@@ -9,6 +9,7 @@ Testados no Google Chrome com Violentmonkey.
 | **YouTube: desativar atalho "/"** | Impede que a tecla "/" jogue o foco para a pesquisa do YouTube | [instalar](https://raw.githubusercontent.com/danilolsilva/scripts-violentmonkey/main/youtube-desativar-atalho-pesquisa.user.js) |
 | **Instagram – barra de progresso nos vídeos** | Barra clicável e arrastável nos vídeos, com tempo atual e duração | [instalar](https://raw.githubusercontent.com/danilolsilva/scripts-violentmonkey/main/instagram-barra-progresso.user.js) |
 | **Instagram – data e hora exatas nas postagens** | Acrescenta a data e hora exatas ao "3 h", "2 sem." etc., inclusive na aba Reels | [instalar](https://raw.githubusercontent.com/danilolsilva/scripts-violentmonkey/main/instagram-data-hora.user.js) |
+| **Instagram – corrige posts que abrem invisíveis** | Impede que o bloqueador de anúncios esconda posts normais por causa de comentários como "Adorei" | [instalar](https://raw.githubusercontent.com/danilolsilva/scripts-violentmonkey/main/instagram-posts-invisiveis.user.js) |
 | **Futemax – sem pop-ups e abas novas** | Bloqueia pop-unders e abas novas e roda os players em sandbox | [instalar](https://raw.githubusercontent.com/danilolsilva/scripts-violentmonkey/main/futemax-antipopup.user.js) |
 
 ## Como instalar
@@ -77,6 +78,19 @@ Passando o mouse, aparecem o dia da semana e os segundos.
 
 - **Feed, posts e comentários:** o horário exato já vem na página (atributo `datetime` do elemento `<time>`), então não há nenhuma consulta extra.
 - **Reels:** lá a página não tem data. O script pega o código do reel na URL e consulta a API interna do Instagram (`/api/v1/media/{id}/info/`), 1 vez por reel, só quando o reel está parado na tela. Enquanto carrega, aparece "…".
+
+## Instagram – corrige posts que abrem invisíveis
+
+Arquivo: [`instagram-posts-invisiveis.user.js`](instagram-posts-invisiveis.user.js)
+
+**Sintoma:** ao abrir certos posts, só aparece o fundo escuro e o X; o post fica invisível.
+
+**Causa:** um filtro de bloqueador de anúncios esconde o post (`display: none !important` no bloco dentro do `<article>`) sempre que **qualquer texto** dentro dele contém "Ad", "Patrocinado" ou "Sponsored", em qualquer posição e sem checar se é a palavra inteira. O filtro deveria pegar só o rótulo de anúncio, mas um único comentário "**Ad**oreiiii 😍", "**Ad**miro" ou "Isso foi **Patrocinado**?" basta para esconder o post. Depois de esconder, o bloqueador não solta mais.
+
+**Correção:** antes de o texto entrar na página, o script coloca um caractere invisível (U+2060, *word joiner*) entre a 1ª e a 2ª letra dessas palavras ("A⁠dorei"). Na tela nada muda, mas o filtro deixa de reconhecer. Texto que é **só** o rótulo ("Patrocinado", "Sponsored", "Ad") não é tocado, então anúncios de verdade continuam bloqueados. Só mexe em texto dentro de posts.
+
+- Roda em `document-start` e no contexto da página (`@inject-into page`), porque precisa corrigir o texto antes de o bloqueador ver.
+- Efeito colateral: ao copiar um comentário com essas palavras, o caractere invisível vai junto.
 
 ## Futemax – sem pop-ups e abas novas
 
