@@ -95,3 +95,7 @@ O `@match` pega todos os sites porque o script precisa rodar dentro dos iframes 
 
 - As APIs usadas (YouTube `youtubei/v1/player` e Instagram `api/v1/media/…/info`) são internas e não oficiais. Se mudarem, a parte que depende delas para de funcionar (no Instagram, só a data dos Reels; o resto continua).
 - O YouTube e o Instagram mudam o layout de vez em quando; se algo sumir, abra uma [issue](https://github.com/danilolsilva/scripts-violentmonkey/issues).
+
+## Licença
+
+[MIT](LICENSE)
